@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    name: Generar APK
+    name: Generar APK Android
     runs-on: ubuntu-latest
 
     steps:
@@ -26,22 +26,25 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configurar SDK Android
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
 
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Permisos de Gradle
+      - name: Permisos Gradle
         run: chmod +x gradlew
 
-      - name: Compilar APK Debug
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Compilar APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Publicar APK
+      - name: Guardar APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: App-Android-Debug
+          name: Android-APK-Debug
           path: '**/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
           retention-days: 30
